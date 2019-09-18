@@ -100,10 +100,12 @@ def train(data_loader):
     accumulation_steps = 32 // args.batch_size
     optimizer.zero_grad()
     for idx, (img, segm) in enumerate(tqdm(data_loader)):
-        #img = img.cuda()
-        #segm = segm.cuda()
+        img = img.cuda()
+        segm = segm.cuda()
         outputs = model(img)
         loss = criterion(outputs, segm)
+        del img
+        del segm
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
@@ -120,10 +122,12 @@ def evaluate(data_loader):
     total_loss = 0
     with torch.no_grad():
         for idx, (img, segm) in enumerate(data_loader):
-            #img = img.cuda() 
-            #segm = segm.cuda() 
+            img = img.cuda() 
+            segm = segm.cuda() 
             outputs = model(img) 
             loss = criterion(outputs, segm)
+            del img
+            del segm
             outputs = outputs.detach().cpu()
             segm = segm.detach().cpu() 
             meter.update(segm, outputs) 
