@@ -20,7 +20,7 @@ from datasets.dataset import null_collate
 parser = argparse.ArgumentParser(description='Semantic Segmentation')
 parser.add_argument('--root_dataset', default='./data/train_images', type=str, help='config file path (default: None)')
 parser.add_argument('--list_train', default='./data/train.csv', type=str)
-parser.add_argument('--batch_size', default=16, type=int)
+parser.add_argument('--batch_size', default=None, type=int)
 parser.add_argument('--lr', default=5e-4, type=float)
 parser.add_argument('--num_epoch', default=200, type=int)
 parser.add_argument('--num_class', default=5, type=int)
@@ -80,11 +80,13 @@ def choosebatchsize(dataset, model, optimizer, criterion):
             data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=4, pin_memory = True) 
             dataloader_iterator = iter(data_loader) 
 
-args.batch_size = choosebatchsize(train_dataset, model, optimizer, criterion)
-args.batch_size = args.batch_size - 1
-if args.batch_size < 1:
-    args.batch_size = 1
-print('Choose batch_size: ', args.batch_size)
+if args.batch_size == None:
+    args.batch_size = choosebatchsize(train_dataset, model, optimizer, criterion)
+    if args.batch_size < 1:
+        args.batch_size = 1
+    print('Choose batch_size: ', args.batch_size)
+else:
+    print('Use batch_size: ', args.batch_size)
 
 
 train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4, pin_memory = True)
