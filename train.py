@@ -49,7 +49,7 @@ criterion = Criterion(mode=args.mode)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = ReduceLROnPlateau(optimizer, mode="min", patience=3, verbose=True)
-num_workers = 1
+num_workers = 4
 
 def choosebatchsize(dataset, model, optimizer, criterion):
     batch_size = 16
