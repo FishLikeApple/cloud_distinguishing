@@ -49,10 +49,11 @@ criterion = Criterion(mode=args.mode)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = ReduceLROnPlateau(optimizer, mode="min", patience=3, verbose=True)
+num_workers = 1
 
 def choosebatchsize(dataset, model, optimizer, criterion):
-    batch_size = 33
-    data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=4, pin_memory = True)
+    batch_size = 16
+    data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=num_workers, pin_memory = True)
     dataloader_iterator = iter(data_loader)
     model = model.cuda()
     model.train()
@@ -77,7 +78,7 @@ def choosebatchsize(dataset, model, optimizer, criterion):
             batch_size = batch_size - 2
             if batch_size<=0:
                 batch_size = 1
-            data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=4, pin_memory = True) 
+            data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=num_workers, pin_memory = True) 
             dataloader_iterator = iter(data_loader) 
 
 if args.batch_size == None:
@@ -89,8 +90,8 @@ else:
     print('Use batch_size: ', args.batch_size)
 
 
-train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4, pin_memory = True)
-valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=4, pin_memory = True)
+train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=num_workers, pin_memory = True)
+valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=num_workers, pin_memory = True)
 
 def train(data_loader):
     model.train()
