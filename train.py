@@ -24,6 +24,7 @@ parser.add_argument('--batch_size', default=None, type=int)
 parser.add_argument('--lr', default=5e-4, type=float)
 parser.add_argument('--num_epoch', default=200, type=int)
 parser.add_argument('--num_class', default=5, type=int)
+parser.add_argument('--num_workers', default=1, type=int)
 
 parser.add_argument('--encoder', default="resnet34", type=str)
 parser.add_argument('--decoder', default="hrnet", type=str)  
@@ -49,11 +50,10 @@ criterion = Criterion(mode=args.mode)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = ReduceLROnPlateau(optimizer, mode="min", patience=3, verbose=True)
-num_workers = 4
 
 def choosebatchsize(dataset, model, optimizer, criterion):
     batch_size = 16
-    data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=num_workers, pin_memory = True)
+    data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=args.num_workers, pin_memory = True)
     dataloader_iterator = iter(data_loader)
     model = model.cuda()
     model.train()
@@ -78,7 +78,7 @@ def choosebatchsize(dataset, model, optimizer, criterion):
             batch_size = batch_size - 2
             if batch_size<=0:
                 batch_size = 1
-            data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=num_workers, pin_memory = True) 
+            data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=args.num_workers, pin_memory = True) 
             dataloader_iterator = iter(data_loader) 
 
 if args.batch_size == None:
@@ -90,8 +90,8 @@ else:
     print('Use batch_size: ', args.batch_size)
 
 
-train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=num_workers, pin_memory = True)
-valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=num_workers, pin_memory = True)
+train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory = True)
+valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory = True)
 
 def train(data_loader):
     model.train()
