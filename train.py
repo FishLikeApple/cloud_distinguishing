@@ -18,7 +18,8 @@ from datasets.dataset import null_collate
 
 
 parser = argparse.ArgumentParser(description='Semantic Segmentation')
-parser.add_argument('--root_dataset', default='./data/train_images', type=str, help='config file path (default: None)')
+parser.add_argument('--train_dataset', default='./data/train_images', type=str, help='config file path')
+parser.add_argument('--test_dataset', default='./data/test_images', type=str, help='config file path')
 parser.add_argument('--list_train', default='./data/train.csv', type=str)
 parser.add_argument('--batch_size', default=None, type=int)
 parser.add_argument('--lr', default=5e-4, type=float)
@@ -40,8 +41,8 @@ else:
     arch = '{}_{}_{}'.format(args.mode, args.encoder, args.decoder)
 print('Architectyre: {}'.format(arch))
 
-train_dataset = SteelDataset(root_dataset = args.root_dataset, list_data = args.list_train, phase='train', mode=args.mode)
-valid_dataset = SteelDataset(root_dataset = args.root_dataset, list_data = args.list_train, phase='valid', mode=args.mode)
+train_dataset = SteelDataset(root_dataset = args.train_dataset, list_data = args.list_train, phase='train', mode=args.mode)
+valid_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_train, phase='valid', mode=args.mode)
 
 
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
@@ -53,7 +54,7 @@ scheduler = ReduceLROnPlateau(optimizer, mode="min", patience=3, verbose=True)
 
 def choosebatchsize(dataset, model, optimizer, criterion):
     batch_size = 16
-    data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=args.num_workers, pin_memory = True)
+    data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=args.num_workers)
     dataloader_iterator = iter(data_loader)
     model = model.cuda()
     model.train()
@@ -78,7 +79,7 @@ def choosebatchsize(dataset, model, optimizer, criterion):
             batch_size = batch_size - 2
             if batch_size<=0:
                 batch_size = 1
-            data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=args.num_workers, pin_memory = True) 
+            data_loader = DataLoader(dataset, batch_size = batch_size, shuffle=False, num_workers=args.num_workers) 
             dataloader_iterator = iter(data_loader) 
 
 if args.batch_size == None:
@@ -90,8 +91,8 @@ else:
     print('Use batch_size: ', args.batch_size)
 
 
-train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory = True)
-valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory = True)
+train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=args.num_workers)
+valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers)
 
 def train(data_loader):
     model.train()
@@ -99,8 +100,8 @@ def train(data_loader):
     accumulation_steps = 32 // args.batch_size
     optimizer.zero_grad()
     for idx, (img, segm) in enumerate(tqdm(data_loader)):
-        img = img.cuda()
-        segm = segm.cuda()
+        #img = img.cuda()
+        #segm = segm.cuda()
         outputs = model(img)
         loss = criterion(outputs, segm)
         (loss/accumulation_steps).backward()
@@ -119,8 +120,8 @@ def evaluate(data_loader):
     total_loss = 0
     with torch.no_grad():
         for idx, (img, segm) in enumerate(data_loader):
-            img = img.cuda() 
-            segm = segm.cuda() 
+            #img = img.cuda() 
+            #segm = segm.cuda() 
             outputs = model(img) 
             loss = criterion(outputs, segm)
             outputs = outputs.detach().cpu()
