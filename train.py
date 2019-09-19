@@ -19,7 +19,6 @@ from datasets.dataset import null_collate
 
 parser = argparse.ArgumentParser(description='Semantic Segmentation')
 parser.add_argument('--train_dataset', default='./data/train_images', type=str, help='config file path')
-parser.add_argument('--test_dataset', default='./data/test_images', type=str, help='config file path')
 parser.add_argument('--list_train', default='./data/train.csv', type=str)
 parser.add_argument('--batch_size', default=None, type=int)
 parser.add_argument('--lr', default=5e-4, type=float)
@@ -42,7 +41,7 @@ else:
 print('Architectyre: {}'.format(arch))
 
 train_dataset = SteelDataset(root_dataset = args.train_dataset, list_data = args.list_train, phase='train', mode=args.mode)
-valid_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_train, phase='valid', mode=args.mode)
+#valid_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_train, phase='valid', mode=args.mode)
 
 
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
@@ -92,7 +91,7 @@ else:
 
 
 train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=args.num_workers)
-valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers)
+#valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers)
 
 def train(data_loader):
     model.train()
@@ -140,7 +139,6 @@ def evaluate(data_loader):
             dice, dice_neg, dice_pos = dices 
             torch.cuda.empty_cache() 
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
-
 
 best_loss = float("inf")
 for epoch in range(args.num_epoch):
