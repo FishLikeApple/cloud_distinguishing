@@ -147,26 +147,10 @@ for epoch in range(args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
     print('[TRAIN] Epoch: {}| Loss: {}| Time: {}'.format(epoch, loss_train, time.time()-start_time))
-    if (epoch+1)%5==0:
-        start_time = time.time()
-        if args.mode == 'cls':
-            val_loss, tn, tp = evaluate(valid_loader)
-            print("['EVAL'] Epoch: {}|Loss: {}| tn: {}| tp: {}| time: {}".format(epoch, val_loss, tn, tp, time.time()-start_time))
-        else:
-            val_loss, iou, dice, dice_neg, dice_pos = evaluate(valid_loader)
-            print("['EVAL'] Epoch: {}|Loss: {}| IoU: {}| dice: {}| dice_neg: {}| dice_pos: {}| time: {}".format(epoch, val_loss, iou, dice, dice_neg, dice_pos, time.time()-start_time))
-        scheduler.step(val_loss)
-        
-        if val_loss < best_loss or (epoch+1)%10==0:
-            status = "not best loss"
-            if val_loss < best_loss:
-                status = "best loss"
-                best_loss = val_loss
-                        
-            state = {
-                "status": status,
-                "epoch": epoch,
-                "arch": arch,
-                "state_dict": model.state_dict()
-            }
-            torch.save(state, '/opt/ml/model/{}_checkpoint_{}.pth'.format(arch, epoch))
+   state = {
+    "status": status,
+    "epoch": epoch,
+    "arch": arch,
+    "state_dict": model.state_dict()
+    }
+    torch.save(state, '/opt/ml/model/{}_checkpoint_{}.pth'.format(arch, epoch))
