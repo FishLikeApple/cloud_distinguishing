@@ -145,7 +145,7 @@ for epoch in range(args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
     print('[TRAIN] Epoch: {}| Loss: {}| Time: {}'.format(epoch, loss_train, time.time()-start_time))
-   state = {
+    state = {
     "status": status,
     "epoch": epoch,
     "arch": arch,
