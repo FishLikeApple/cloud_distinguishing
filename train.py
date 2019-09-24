@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser(description='Semantic Segmentation')
 parser.add_argument('--train_dataset', default='./data/train_images', type=str, help='config file path')
 parser.add_argument('--list_train', default='./data/train.csv', type=str)
 parser.add_argument('--batch_size', default=None, type=int)
+parser.add_argument('--checkpoint', default=None, type=str)
 parser.add_argument('--lr', default=5e-4, type=float)
 parser.add_argument('--num_epoch', default=200, type=int)
 parser.add_argument('--num_class', default=5, type=int)
@@ -43,9 +44,11 @@ print('Architectyre: {}'.format(arch))
 train_dataset = SteelDataset(root_dataset = args.train_dataset, list_data = args.list_train, phase='train', mode=args.mode)
 #valid_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_train, phase='valid', mode=args.mode)
 
-
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
 model = model.cuda()
+if args.checkpoint != None:
+    model.load_state_dict(torch.load(args.checkpoint))
+    
 criterion = Criterion(mode=args.mode)
 
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
@@ -151,4 +154,4 @@ for epoch in range(args.num_epoch):
     "arch": arch,
     "state_dict": model.state_dict()
     }
-    torch.save(state, '/opt/ml/model/{}_checkpoint_{}.pth'.format(arch, epoch))
+    torch.save(state, '{}_checkpoint_{}.pth'.format(arch, epoch))
