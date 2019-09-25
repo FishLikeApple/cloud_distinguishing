@@ -22,6 +22,7 @@ parser.add_argument('--train_dataset', default='./data/train_images', type=str, 
 parser.add_argument('--list_train', default='./data/train.csv', type=str)
 parser.add_argument('--batch_size', default=None, type=int)
 parser.add_argument('--checkpoint', default=None, type=str)
+parser.add_argument('--new_checkpoint_path', default='', type=str)
 parser.add_argument('--lr', default=5e-4, type=float)
 parser.add_argument('--num_epoch', default=200, type=int)
 parser.add_argument('--num_class', default=5, type=int)
@@ -154,4 +155,4 @@ for epoch in range(args.num_epoch):
     "arch": arch,
     "state_dict": model.state_dict()
     }
-    torch.save(state, '{}_checkpoint_{}.pth'.format(arch, epoch))
+    torch.save(state, '{}{}_checkpoint_{}.pth'.format(args.new_checkpoint_path, arch, epoch))
