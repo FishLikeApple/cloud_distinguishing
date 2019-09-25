@@ -70,6 +70,8 @@ def test(test_loader):
     for idx, (img, segm) in enumerate(tqdm(data_loader)):
         img = img.cuda()
         outputs = model(img)
-
+    print('outputs')  
+    print(outputs[0])
+        
     torch.cuda.empty_cache()
     return total_loss/len(data_loader)
