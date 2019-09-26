@@ -105,36 +105,17 @@ def train(data_loader):
     accumulation_steps = 32 // args.batch_size
     optimizer.zero_grad()
     for idx, (img, segm) in enumerate(tqdm(data_loader)):
-        try:
-            img = img.cuda()
-            segm = segm.cuda()
-            outputs = model(img)
-            loss = criterion(outputs, segm)
-            (loss/accumulation_steps).backward()
-            clipping_value = 1.0
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
-            if (idx + 1 ) % accumulation_steps == 0:
-                optimizer.step() 
-                optimizer.zero_grad() 
-            total_loss += loss.item() 
-        except RuntimeError as e:
-            if 'out of memory' in str(e):
-                # clear the GPU cache against overmemory
-                print('| WARNING: ran out of memory')
-                torch.cuda.empty_cache()
-                img = img.cuda()
-                segm = segm.cuda()
-                outputs = model(img)
-                loss = criterion(outputs, segm)
-                (loss/accumulation_steps).backward()
-                clipping_value = 1.0
-                torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
-                if (idx + 1 ) % accumulation_steps == 0:
-                    optimizer.step() 
-                    optimizer.zero_grad() 
-                total_loss += loss.item() 
-            else:
-                raise e
+        img = img.cuda()
+        segm = segm.cuda()
+        outputs = model(img)
+        loss = criterion(outputs, segm)
+        (loss/accumulation_steps).backward()
+        clipping_value = 1.0
+        torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
+        if (idx + 1 ) % accumulation_steps == 0:
+            optimizer.step() 
+            optimizer.zero_grad() 
+        total_loss += float(loss.item()) 
             
     return total_loss/len(data_loader)
 
