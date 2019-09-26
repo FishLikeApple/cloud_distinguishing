@@ -67,7 +67,7 @@ def post_process(probability, threshold, min_size):
             num += 1
     return predictions, num
 
-def test(test_loader):
+def test(data_loader):
     model.eval()
     total_loss = 0
     accumulation_steps = 32 // args.batch_size
@@ -79,3 +79,5 @@ def test(test_loader):
         
     torch.cuda.empty_cache()
     return total_loss/len(data_loader)
+
+test(test_loader)
