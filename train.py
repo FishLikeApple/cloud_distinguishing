@@ -115,8 +115,9 @@ def train(data_loader):
         if (idx + 1 ) % accumulation_steps == 0:
             optimizer.step() 
             optimizer.zero_grad()
-        # total_loss is unused
-        #total_loss += float(loss.item())
+        total_loss += loss.item()
+        
+        # delete caches
         del img, segm, outputs, loss
         torch.cuda.empty_cache()
             
