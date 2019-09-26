@@ -98,7 +98,7 @@ else:
 
 train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=args.num_workers)
 #valid_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers)
-
+import gc
 def train(data_loader):
     model.train()
     total_loss = 0
@@ -117,9 +117,13 @@ def train(data_loader):
             optimizer.zero_grad()
         # total_loss is unused
         #total_loss += float(loss.item())
-        outputs.detach()
-        loss.detach()
-        del img, segm, outputs, loss
+        #debugging
+        if idx % 10 == 0:
+            for obj in gc.get_objects():
+                try:
+                    if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
+                        print(type(obj), obj.size())
+                except: pass
             
     return total_loss/len(data_loader)
 
