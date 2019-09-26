@@ -164,6 +164,7 @@ def evaluate(data_loader):
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
 
 best_loss = float("inf")
+torch.save(state, '{}{}_checkpoint_{}.pth'.format(args.new_checkpoint_path, arch, 0))
 for epoch in range(args.epoch_start, args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
