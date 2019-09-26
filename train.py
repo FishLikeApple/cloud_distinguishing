@@ -117,6 +117,7 @@ def train(data_loader):
             optimizer.zero_grad()
         # total_loss is unused
         #total_loss += float(loss.item()) 
+        del img, segm, outputs, loss
             
     return total_loss/len(data_loader)
 
