@@ -108,7 +108,7 @@ def train(data_loader):
         img = img.cuda()
         segm = segm.cuda()
         outputs = model(img)
-        loss = criterion(outputs.detach(), segm)
+        loss = criterion(outputs, segm)
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
@@ -116,7 +116,9 @@ def train(data_loader):
             optimizer.step() 
             optimizer.zero_grad()
         # total_loss is unused
-        #total_loss += float(loss.item()) 
+        #total_loss += float(loss.item())
+        outputs.detach()
+        loss.detach()
         del img, segm, outputs, loss
             
     return total_loss/len(data_loader)
@@ -147,13 +149,6 @@ def evaluate(data_loader):
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
 
 best_loss = float("inf")
-state = {
-    "status": 'debugging',
-    "epoch": 0,
-    "arch": arch,
-    "state_dict": model.state_dict()
-    }
-torch.save(state, '{}{}_checkpoint_{}.pth'.format(args.new_checkpoint_path, arch, 0))
 for epoch in range(args.epoch_start, args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
