@@ -112,13 +112,13 @@ def train(data_loader):
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
-        if (idx + 1 ) % args.accumulation_steps == 0:
+        if (idx + 1 ) % accumulation_steps == 0:
             optimizer.step() 
             optimizer.zero_grad() 
         total_loss += loss.item()
         
         # clear the GPU cache against overmemory
-        if (idx + 1 ) % clearing_steps == 0:
+        if (idx + 1 ) % args.clearing_steps == 0:
             torch.cuda.empty_cache()
             
     return total_loss/len(data_loader)
