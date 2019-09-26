@@ -23,7 +23,11 @@ parser.add_argument('--list_test', default='./data/test.csv', type=str)
 parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--num_class', default=5, type=int)
 parser.add_argument('--num_workers', default=1, type=int)
+parser.add_argument('--encoder', default="resnet34", type=str)
+parser.add_argument('--decoder', default="hrnet", type=str)  
 parser.add_argument('--mode', default='non-cls', type=str)
+args = parser.parse_args()
+
 args = parser.parse_args()
 
 test_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_test, phase='test', mode=args.mode)
