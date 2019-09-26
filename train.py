@@ -24,9 +24,11 @@ parser.add_argument('--batch_size', default=None, type=int)
 parser.add_argument('--checkpoint', default=None, type=str)
 parser.add_argument('--new_checkpoint_path', default='', type=str)
 parser.add_argument('--lr', default=5e-4, type=float)
+parser.add_argument('--epoch_start', default=0, type=int)
 parser.add_argument('--num_epoch', default=200, type=int)
 parser.add_argument('--num_class', default=5, type=int)
 parser.add_argument('--num_workers', default=1, type=int)
+parser.add_argument('--clearing_steps', default=15, type=int)
 
 parser.add_argument('--encoder', default="resnet34", type=str)
 parser.add_argument('--decoder', default="hrnet", type=str)  
@@ -107,16 +109,18 @@ def train(data_loader):
         segm = segm.cuda()
         outputs = model(img)
         loss = criterion(outputs, segm)
-        del img
-        del segm
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
         if (idx + 1 ) % accumulation_steps == 0:
             optimizer.step() 
             optimizer.zero_grad() 
-        total_loss += loss.item() 
-    torch.cuda.empty_cache()
+        total_loss += loss.item()
+        
+        # clear the GPU cache against overmemory
+        if (idx + 1 ) % clearing_steps == 0:
+            torch.cuda.empty_cache()
+            
     return total_loss/len(data_loader)
 
 def evaluate(data_loader):
@@ -145,7 +149,7 @@ def evaluate(data_loader):
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
 
 best_loss = float("inf")
-for epoch in range(args.num_epoch):
+for epoch in range(args.epoch_start, args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
     print('[TRAIN] Epoch: {}| Loss: {}| Time: {}'.format(epoch, loss_train, time.time()-start_time))
