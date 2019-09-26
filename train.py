@@ -114,8 +114,9 @@ def train(data_loader):
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
         if (idx + 1 ) % accumulation_steps == 0:
             optimizer.step() 
-            optimizer.zero_grad() 
-        total_loss += float(loss.item()) 
+            optimizer.zero_grad()
+        # total_loss is unused
+        #total_loss += float(loss.item()) 
             
     return total_loss/len(data_loader)
 
