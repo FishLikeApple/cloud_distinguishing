@@ -34,7 +34,7 @@ test_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.l
 
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
 model = model.cuda()
-model.load_state_dict(torch.load(args.checkpoint))
+model.load_state_dict(torch.load(args.checkpoint)['state_dict'])
 model.eval()
 criterion = Criterion(mode=args.mode)
 
