@@ -154,7 +154,7 @@ for epoch in range(args.epoch_start, args.num_epoch):
     loss_train = train(train_loader)
     print('[TRAIN] Epoch: {}| Loss: {}| Time: {}'.format(epoch, loss_train, time.time()-start_time))
     state = {
-    "status": status,
+    "status": 'not used',
     "epoch": epoch,
     "arch": arch,
     "state_dict": model.state_dict()
