@@ -149,7 +149,7 @@ def evaluate(data_loader):
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
 
 best_loss = float("inf")
-for epoch in range(args.epoch_start, args.num_epoch):
+for epoch in range(args.epoch_start, args.epoch_start+args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
     print('[TRAIN] Epoch: {}| Loss: {}| Time: {}'.format(epoch, loss_train, time.time()-start_time))
