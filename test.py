@@ -2,7 +2,7 @@ import os
 os.system('pip install -r Steel-Defect-Detection/requirements.txt')
 import argparse 
 import torch 
-from datasets import SteelDataset 
+from datasets import TestSteelDataset 
 from torch.utils.data import DataLoader 
 import torch.nn as nn 
 from optimizers import RAdam 
