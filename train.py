@@ -50,7 +50,7 @@ train_dataset = SteelDataset(root_dataset = args.train_dataset, list_data = args
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
 model = model.cuda()
 if args.checkpoint != None:
-    model.load_state_dict(torch.load(args.checkpoint))
+    model.load_state_dict(torch.load(args.checkpoint)['state_dict'])
     
 criterion = Criterion(mode=args.mode)
 
