@@ -60,7 +60,6 @@ def output2rle(mask_output, type=1):
     '''change a certain type of model mask output to the submission type'''
     
     mask = np.where(mask_output==type, 1, 0)
-    print(mask)
     return mask2rle(mask)
     
 # the function is from https://www.kaggle.com/bibek777/heng-s-model-inference-kernel
@@ -83,12 +82,10 @@ def test(data_loader):
     for idx, (img, segm, img_id) in enumerate(tqdm(data_loader)):
         img = img.cuda()
         output = model(img).cpu().detach().numpy()
-        print(output)
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
-        print(output)
         for type in type_list: 
             rle = output2rle(output, type)
-            submission.loc[submission['ImageId_ClassId']==img_id+'.jpg_'+str(type), 'EncodedPixels'] = rle
+            submission.loc[submission['ImageId_ClassId']==img_id+'.jpg_'+str(type), 'EncodedPixels'].values = rle
     submission.to_csv(args.submission)
 
 test(test_loader)
