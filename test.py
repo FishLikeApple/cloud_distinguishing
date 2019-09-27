@@ -82,6 +82,8 @@ def test(data_loader):
     model.eval()
     for idx, (img, segm, img_id) in enumerate(tqdm(data_loader)):
         img = img.cuda()
+        output = model(img).cpu().detach().numpy()
+        print(output)
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
         for type in type_list: 
             rle = output2rle(output, type)
