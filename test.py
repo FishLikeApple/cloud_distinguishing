@@ -81,7 +81,7 @@ def test(data_loader):
     model.eval()
     for idx, (img, segm, img_id) in enumerate(tqdm(data_loader)):
         img = img.cuda()
-        output = np.argmax(model(img).cpu(), axis=0)
+        output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
         for type in type_list: 
             rle = output2rle(output, type)
             submission.loc[submission['ImageId_ClassId']==img_id+'.jpg_'+str(type), 'EncodedPixels'] = rle
