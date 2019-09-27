@@ -15,11 +15,14 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torchvision
 from models.loss import Criterion
 from datasets.dataset import null_collate
+import numpy as np
+import pandas as pd
 
 parser = argparse.ArgumentParser(description='Semantic Segmentation')
 parser.add_argument('--test_dataset', default='./data/test_images', type=str, help='config file path')
 parser.add_argument('--checkpoint', default='./checkpoint.pth', type=str, help='config file path')
 parser.add_argument('--list_test', default='./data/test.csv', type=str)
+parser.add_argument('--submission', default='./submission.csv', type=str)
 parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--num_class', default=5, type=int)
 parser.add_argument('--num_workers', default=1, type=int)
@@ -28,9 +31,7 @@ parser.add_argument('--decoder', default="hrnet", type=str)
 parser.add_argument('--mode', default='non-cls', type=str)
 args = parser.parse_args()
 
-args = parser.parse_args()
-
-test_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_test, phase='test', mode=args.mode)
+test_dataset = TestSteelDataset(root_dataset = args.test_dataset, list_data = args.list_test, phase='test', mode=args.mode)
 
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
 model = model.cuda()
@@ -40,7 +41,10 @@ criterion = Criterion(mode=args.mode)
 
 test_loader = DataLoader(test_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers)
 
-# the above function is from https://www.kaggle.com/paulorzp/rle-functions-run-lenght-encode-decode
+type_list = [1, 2, 3, 4]
+submission = pd.read_csv(args.list_test)
+
+# the function is from https://www.kaggle.com/paulorzp/rle-functions-run-lenght-encode-decode
 def mask2rle(img):
     '''
     img: numpy array, 1 - mask, 0 - background
@@ -51,8 +55,14 @@ def mask2rle(img):
     runs = np.where(pixels[1:] != pixels[:-1])[0] + 1
     runs[1::2] -= runs[::2]
     return ' '.join(str(x) for x in runs)
+
+def output2rle(mask_output, type=1):
+    '''change a certain type of model mask output to the submission type'''
     
-# the above function is from https://www.kaggle.com/bibek777/heng-s-model-inference-kernel
+    mask = np.where(mask_output==type)
+    return mask2rle(mask)
+    
+# the function is from https://www.kaggle.com/bibek777/heng-s-model-inference-kernel
 def post_process(probability, threshold, min_size):
     '''Post processing of each predicted mask, components with lesser number of pixels
     than `min_size` are ignored'''
@@ -69,15 +79,12 @@ def post_process(probability, threshold, min_size):
 
 def test(data_loader):
     model.eval()
-    total_loss = 0
-    accumulation_steps = 32 // args.batch_size
-    for idx, (img, segm) in enumerate(tqdm(data_loader)):
+    for idx, (img, segm, img_id) in enumerate(tqdm(data_loader)):
         img = img.cuda()
-        outputs = model(img)
-    print('outputs')  
-    print(outputs[0])
-        
-    torch.cuda.empty_cache()
-    return total_loss/len(data_loader)
+        output = np.argmax(model(img), axis=0)
+        for type in type_list: 
+            rle = output2rle(output, type)
+            submission.loc[submission['ImageId_ClassId']==img_id+'.jpg_'+str(type), 'EncodedPixels'] = rle
+    submission.to_csv(args.submission)
 
 test(test_loader)
