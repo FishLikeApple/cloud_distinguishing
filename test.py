@@ -59,7 +59,7 @@ def mask2rle(img):
 def output2rle(mask_output, type=1):
     '''change a certain type of model mask output to the submission type'''
     
-    mask = np.where(mask_output==type)
+    mask = np.where(mask_output==type, 1, 0)
     print(mask)
     return mask2rle(mask)
     
@@ -85,6 +85,7 @@ def test(data_loader):
         output = model(img).cpu().detach().numpy()
         print(output)
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
+        print(output)
         for type in type_list: 
             rle = output2rle(output, type)
             submission.loc[submission['ImageId_ClassId']==img_id+'.jpg_'+str(type), 'EncodedPixels'] = rle
