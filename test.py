@@ -85,7 +85,7 @@ def test(data_loader):
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
         for type in type_list: 
             rle = output2rle(output, type)
-            submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'].values[0] = rle
+            submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'].values = rle
     submission.to_csv(args.submission)
 
 test(test_loader)
