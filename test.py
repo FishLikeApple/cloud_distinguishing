@@ -79,7 +79,7 @@ def post_process(probability, threshold, min_size):
 
 def test(data_loader):
     model.eval()
-    for idx, (img, segm, img_id) in enumerate(tqdm(data_loader)):
+    for img, segm, img_id in tqdm(data_loader):
         img = img.cuda()
         output = model(img).cpu().detach().numpy()
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
