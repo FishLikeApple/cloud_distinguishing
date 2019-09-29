@@ -133,7 +133,7 @@ class TestSteelDataset(SteelDataset):
             mask = mask*torch.tensor([1, 2, 3, 4], dtype=torch.float32)
             mask, _ = torch.max(mask, -1) 
             mask = mask.long()
-        return img, mask, image_id
+        return img, mask, image_id[0]
 
 def image_to_input(image,rbg_mean,rbg_std):#, rbg_mean=[0,0,0], rbg_std=[1,1,1]):
     input = image.astype(np.float32)
