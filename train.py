@@ -29,6 +29,7 @@ parser.add_argument('--num_epoch', default=200, type=int)
 parser.add_argument('--num_class', default=5, type=int)
 parser.add_argument('--num_workers', default=1, type=int)
 parser.add_argument('--clearing_steps', default=12, type=int)
+parser.add_argument('--print_last_loss', default=False, type=str)
 
 parser.add_argument('--encoder', default="resnet34", type=str)
 parser.add_argument('--decoder', default="hrnet", type=str)  
@@ -115,6 +116,8 @@ def train(data_loader):
         if (idx + 1 ) % accumulation_steps == 0:
             optimizer.step() 
             optimizer.zero_grad()
+            if args.print_last_loss:
+                print('last loss:'+srt(loss.item()))
         total_loss += loss.item()
         
         # delete caches
