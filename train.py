@@ -117,7 +117,7 @@ def train(data_loader):
             optimizer.step() 
             optimizer.zero_grad()
             if args.print_last_loss != None:
-                print('last loss:'+srt(loss.item()))
+                print('last loss:'+str(loss.item()))
         total_loss += loss.item()
         
         # delete caches
