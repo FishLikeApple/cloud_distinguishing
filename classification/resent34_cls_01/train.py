@@ -1,6 +1,8 @@
 import os
 os.environ['CUDA_VISIBLE_DEVICES']='0'
 
+import sys 
+sys.path.append("../")
 from common  import *
 from dataset import *
 from model   import *
