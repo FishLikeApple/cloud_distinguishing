@@ -1,8 +1,9 @@
 import os
 os.environ['CUDA_VISIBLE_DEVICES']='0'
 
-from ../common  import *
-from ../dataset import *
+from .. import common, dataset 
+from common  import *
+from dataset import *
 from model   import *
 
 # added argparse
