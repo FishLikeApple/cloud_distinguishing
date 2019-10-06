@@ -5,7 +5,18 @@ from common  import *
 from dataset import *
 from model   import *
 
+# added argparse
+import argparse
+def parse_args():
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset_path', default='', type=str)
+    parser.add_argument('--out_dir', default='', type=str)
+    parser.add_argument('--initial_checkpoint', default=None, type=str)
 
+    args = parser.parse_args()
+    
+    return args
 
 
 def valid_augment(image, mask, infor):
@@ -126,14 +137,10 @@ def do_valid(net, valid_loader, out_dir=None):
 
 
 def run_train():
-    out_dir = \
-        '/root/share/project/kaggle/2019/steel/result1/resnet34-cls-full-foldb0-0'
-
-    initial_checkpoint = \
-        '/root/share/project/kaggle/2019/steel/result1/resnet34-cls-full-foldb0-0/checkpoint/00007500_model.pth'
-
-
-
+    args = parse_args()
+    
+    out_dir = args.out_dir
+    initial_checkpoint = args.initial_checkpoint
 
     schduler = NullScheduler(lr=0.001)
     batch_size = 20 #8
@@ -162,8 +169,8 @@ def run_train():
 
     train_dataset = SteelDataset(
         mode    = 'train',
-        csv     = ['train.csv',],
-        split   = ['train_b0_11568.npy',],
+        csv     = [args.dataset_path+'train.csv',],
+        split   = ['../split/train_b0_11568.npy',],
         augment = train_augment,
     )
     train_loader  = DataLoader(
@@ -181,8 +188,8 @@ def run_train():
 
     valid_dataset = SteelDataset(
         mode    = 'train',
-        csv     = ['train.csv',],
-        split   = ['valid_b0_1000.npy',],
+        csv     = [args.dataset_path+'train.csv',],
+        split   = ['../split/valid_b0_1000.npy',],
         augment = valid_augment,
     )
     valid_loader = DataLoader(
