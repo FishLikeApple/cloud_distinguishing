@@ -111,8 +111,8 @@ def train(data_loader):
         segm = segm.cuda()
         outputs = model(img)
         loss = criterion(outputs, segm)
-        print('segm:')
-        print(segm)
+        print('segm.sum():')
+        print(segm.sum())
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
