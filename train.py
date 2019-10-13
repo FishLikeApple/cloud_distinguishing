@@ -103,6 +103,7 @@ train_loader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=T
 def train(data_loader):
     model.train()
     total_loss = 0
+    loss_sum = 0
     accumulation_steps = 32 // args.batch_size
     optimizer.zero_grad()
     for idx, (img, segm) in enumerate(tqdm(data_loader)):
@@ -113,11 +114,13 @@ def train(data_loader):
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
+        loss_sum += loss.item()
         if (idx + 1 ) % accumulation_steps == 0:
             optimizer.step() 
             optimizer.zero_grad()
             if args.print_last_loss != None:
-                print('last loss:'+str(loss.item()))
+                print('loss:'+str(loss_sum/accumulation_steps))
+                loss_sum = 0
         total_loss += loss.item()
         
         # delete caches
