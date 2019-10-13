@@ -111,8 +111,6 @@ def train(data_loader):
         segm = segm.cuda()
         outputs = model(img)
         loss = criterion(outputs, segm)
-        print('segm.sum():')
-        print(segm.sum())
         (loss/accumulation_steps).backward()
         clipping_value = 1.0
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
@@ -157,6 +155,7 @@ def evaluate(data_loader):
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
 
 best_loss = float("inf")
+print(criterion(torch.tensor([[0, 0], [1, 0]]), torch.tensor([[0, 0], [1, 0]])))
 for epoch in range(args.epoch_start, args.epoch_start+args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
