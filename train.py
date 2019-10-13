@@ -155,7 +155,7 @@ def evaluate(data_loader):
             return total_loss/len(data_loader), iou, dice, dice_neg, dice_pos
 
 best_loss = float("inf")
-print(criterion(torch.tensor([[0, 0], [1, 0]]), torch.tensor([[0, 0], [1, 0]])))
+print(criterion(torch.tensor([[0, 0], [1, 0], [0, 0], [1, 0], [1, 0]]), torch.tensor([[0, 0], [1, 0], [0, 0], [1, 0], [1, 0]])))
 for epoch in range(args.epoch_start, args.epoch_start+args.num_epoch):
     start_time = time.time()
     loss_train = train(train_loader)
