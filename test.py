@@ -18,6 +18,10 @@ from datasets.dataset import null_collate
 import numpy as np
 import pandas as pd
 import cv2
+from albumentations import (
+    Compose,
+    Resize
+)
 
 parser = argparse.ArgumentParser(description='Semantic Segmentation')
 parser.add_argument('--test_dataset', default='./data/test_images', type=str, help='config file path')
@@ -44,6 +48,18 @@ test_loader = DataLoader(test_dataset, batch_size = args.batch_size, shuffle=Fal
 
 type_list = [1, 2, 3, 4]
 submission = pd.read_csv(args.list_test)
+
+def get_transforms():
+    original_height = 256
+    original_width = 1600
+    list_transforms = []
+    list_transforms.extend(
+        [
+            Resize(height=6, width=6,  interpolation=cv2.INTER_NEAREST)
+        ]
+    )
+    list_trfms = Compose(list_transforms)
+    return list_trfms
 
 # the function is from https://www.kaggle.com/paulorzp/rle-functions-run-lenght-encode-decode
 def mask2rle(img):
@@ -91,9 +107,10 @@ def test(data_loader):
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
     submission.to_csv(args.submission)
 
-img = torch.tensor([[0, 1, 1], [0, 2, 1], [2, 2, 0]])
-o_img = torchvision.transforms.functional.resize(img, (256, 1600),  interpolation=cv2.INTER_NEAREST)
-print(output2rle(o_img.detach().numpy(), 1))
+img = [[0, 1, 1], [0, 2, 1], [2, 2, 0]]
+o_img = get_transforms(image=img)
+print(o_img)
+print(output2rle(o_img, 1))
 a = 1/0
 
 test(test_loader)
