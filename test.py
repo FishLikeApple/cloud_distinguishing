@@ -89,5 +89,7 @@ def test(data_loader):
             rle = output2rle(output, type)
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
     submission.to_csv(args.submission)
-
+    
+print(output2rle([[0, 1, 1], [0, 2, 1], [2, 2, 0]]))
+a = 1/0
 test(test_loader)
