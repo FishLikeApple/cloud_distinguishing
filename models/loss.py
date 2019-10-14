@@ -27,6 +27,7 @@ class Criterion(loss._Loss):
         else:
             logit = logit.permute(0, 2, 3, 1).contiguous().view(-1, 5)
             truth = truth.permute(0, 2, 3, 1).contiguous().view(-1)
+            assert truth.permute(0, 2, 3, 1).shape == [batch_size, 1600, 4, 256]
 
             if weight is not None: weight = torch.FloatTensor([1]+weight).cuda()
             loss = F.cross_entropy(logit, truth, weight=weight, reduction='none')
