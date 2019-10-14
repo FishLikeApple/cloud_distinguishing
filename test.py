@@ -17,6 +17,7 @@ from models.loss import Criterion
 from datasets.dataset import null_collate
 import numpy as np
 import pandas as pd
+import cv2
 
 parser = argparse.ArgumentParser(description='Semantic Segmentation')
 parser.add_argument('--test_dataset', default='./data/test_images', type=str, help='config file path')
@@ -89,7 +90,10 @@ def test(data_loader):
             rle = output2rle(output, type)
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
     submission.to_csv(args.submission)
-    
-print(output2rle([[0, 1, 1], [0, 2, 1], [2, 2, 0]]))
+
+img = torch.tensor([[0, 1, 1], [0, 2, 1], [2, 2, 0]])
+o_img = torchvision.transforms.functional.resize(img, (256, 1600),  interpolation=cv2.INTER_NEAREST)
+print(output2rle(o_img..detach().numpy(), 1))
 a = 1/0
+
 test(test_loader)
