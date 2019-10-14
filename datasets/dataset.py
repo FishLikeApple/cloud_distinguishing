@@ -107,6 +107,7 @@ class SteelDataset(Dataset):
             mask = mask.float()
         else:
             mask = mask*torch.tensor([1, 2, 3, 4], dtype=torch.float32)
+            assert mask.shape == [1, 256, 1600, 4] # make sure of the shape
             mask, _ = torch.max(mask, -1) 
             mask = mask.long()
         return img, mask
