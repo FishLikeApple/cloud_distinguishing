@@ -93,7 +93,7 @@ def test(data_loader):
 
 img = torch.tensor([[0, 1, 1], [0, 2, 1], [2, 2, 0]])
 o_img = torchvision.transforms.functional.resize(img, (256, 1600),  interpolation=cv2.INTER_NEAREST)
-print(output2rle(o_img..detach().numpy(), 1))
+print(output2rle(o_img.detach().numpy(), 1))
 a = 1/0
 
 test(test_loader)
