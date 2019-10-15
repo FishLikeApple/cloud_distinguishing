@@ -77,6 +77,7 @@ def output2rle(mask_output, type=1):
     '''change a certain type of model mask output to the submission type'''
     
     mask_output = np.asarray(mask_output)
+    print(mask_output)
     mask = np.where(mask_output==type, 1, 0)
     print(mask)
     return mask2rle(mask)
