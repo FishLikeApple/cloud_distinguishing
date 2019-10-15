@@ -102,7 +102,7 @@ def test(data_loader):
         img = img.cuda()
         output = model(img).cpu().detach().numpy()
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
-        mask = transform_fn(mask=output)['mask']
+        mask = transform_fn(image=output)['image']
         for type in type_list: 
             rle = output2rle(mask, type)
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
