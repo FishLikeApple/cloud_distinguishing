@@ -55,7 +55,7 @@ def get_transforms():
     list_transforms = []
     list_transforms.extend(
         [
-            Resize(height=6, width=6,  interpolation=cv2.INTER_NEAREST)
+            Resize(height=256, width=1600,  interpolation=cv2.INTER_NEAREST)
         ]
     )
     list_trfms = Compose(list_transforms)
@@ -77,9 +77,7 @@ def output2rle(mask_output, type=1):
     '''change a certain type of model mask output to the submission type'''
     
     mask_output = np.asarray(mask_output)
-    print(mask_output)
     mask = np.where(mask_output==type, 1, 0)
-    print(mask)
     return mask2rle(mask)
     
 # the function is from https://www.kaggle.com/bibek777/heng-s-model-inference-kernel
@@ -99,20 +97,15 @@ def post_process(probability, threshold, min_size):
 
 def test(data_loader):
     model.eval()
+    transform_fn = get_transforms()
     for img, segm, img_id in tqdm(data_loader):
         img = img.cuda()
         output = model(img).cpu().detach().numpy()
-        print(output)
         output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
-        print(output)
+        mask = transform_fn(mask=output)['mask']
         for type in type_list: 
-            rle = output2rle(output, type)
+            rle = output2rle(mask, type)
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
     submission.to_csv(args.submission)
-
-img = np.array([[0, 1, 1], [0, 2, 1], [2, 2, 0]])
-o_img = get_transforms()(image=img)['image']
-print(output2rle(o_img, 1))
-a = 1/0
 
 test(test_loader)
