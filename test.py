@@ -108,7 +108,7 @@ def test(data_loader):
     submission.to_csv(args.submission)
 
 img = [[0, 1, 1], [0, 2, 1], [2, 2, 0]]
-o_img = get_transforms(image=img)
+o_img = get_transforms()(image=img)
 print(o_img)
 print(output2rle(o_img, 1))
 a = 1/0
