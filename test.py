@@ -77,6 +77,7 @@ def output2rle(mask_output, type=1):
     '''change a certain type of model mask output to the submission type'''
     
     mask = np.where(mask_output==type, 1, 0)
+    print(mask)
     return mask2rle(mask)
     
 # the function is from https://www.kaggle.com/bibek777/heng-s-model-inference-kernel
@@ -109,7 +110,6 @@ def test(data_loader):
 
 img = np.array([[0, 1, 1], [0, 2, 1], [2, 2, 0]])
 o_img = get_transforms()(image=img)
-print(o_img)
 print(output2rle(o_img, 1))
 a = 1/0
 
