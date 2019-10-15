@@ -107,7 +107,7 @@ def test(data_loader):
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
     submission.to_csv(args.submission)
 
-img = [[0, 1, 1], [0, 2, 1], [2, 2, 0]]
+img = np.array([[0, 1, 1], [0, 2, 1], [2, 2, 0]])
 o_img = get_transforms()(image=img)
 print(o_img)
 print(output2rle(o_img, 1))
