@@ -105,6 +105,6 @@ def test(data_loader):
         for type in type_list:
             rle = output2rle(mask, type)
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
-    submission.to_csv(args.submission)
+    submission.to_csv(args.submission, index=False)
 
 test(test_loader)
