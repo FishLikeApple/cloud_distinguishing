@@ -100,12 +100,9 @@ def test(data_loader):
     transform_fn = get_transforms()
     for img, segm, img_id in tqdm(data_loader):
         img = img.cuda()
-        output = model(img).cpu().detach().numpy()
-        print(output.shape)
-        output = np.argmax(model(img).cpu().detach().numpy(), axis=0)
-        print(output.shape)
-        mask = transform_fn(image=output)['image']
-        for type in type_list: 
+        output = np.argmax(model(img).cpu().detach().numpy(), axis=1)
+        mask = transform_fn(image=np.squeeze(output))['image']
+        for type in type_list:
             rle = output2rle(mask, type)
             submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
     submission.to_csv(args.submission)
