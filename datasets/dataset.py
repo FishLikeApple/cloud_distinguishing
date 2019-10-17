@@ -67,7 +67,7 @@ def get_transforms(phase):
 
 class CloudDataset(Dataset):
     def __init__(self, root_dataset, list_data, phase, mode='cls'):
-        super(SteelDataset, self).__init__()
+        super(CloudDataset, self).__init__()
         self.mode = mode
         self.root_dataset = root_dataset
         self.df = self.__read_file__(list_data=list_data)
