@@ -40,7 +40,7 @@ args = parser.parse_args()
 arch = '{}_{}_{}'.format(args.mode, args.encoder, args.decoder)
 print('Architectyre: {}'.format(arch))
 
-train_dataset = SteelDataset(root_dataset = args.train_dataset, list_data = args.list_train, phase='train', mode=args.mode)
+train_dataset = CloudDataset(root_dataset = args.train_dataset, list_data = args.list_train, phase='train', mode=args.mode)
 #valid_dataset = SteelDataset(root_dataset = args.test_dataset, list_data = args.list_train, phase='valid', mode=args.mode)
 
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
