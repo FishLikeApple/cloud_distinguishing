@@ -57,7 +57,7 @@ def get_transforms(phase):
         )
     list_transforms.extend(
         [
-            Resize(height=original_height//2, width=original_width//2,  interpolation=cv2.INTER_NEAREST),
+            Resize(height=original_height//2.5, width=original_width//2.5,  interpolation=cv2.INTER_NEAREST),
             Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), p=1),
             ToTensor(),
         ]
