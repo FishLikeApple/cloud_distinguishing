@@ -75,8 +75,8 @@ class CloudDataset(Dataset):
     
     def __read_file__(self, list_data):
         df = pd.read_csv(os.path.join(list_data))
-        df['ImageId'], df['ClassId'] = zip(*df['ImageId_ClassId'].str.split('_'))
-        df = df.pivot(index='ImageId',columns='ClassId',values='EncodedPixels')
+        df['Image'], df['Label'] = zip(*df['Image_Label'].str.split('_'))
+        df = df.pivot(index='Image',columns='Label',values='EncodedPixels')
         df['defects'] = df.count(axis=1)
         return df
     def make_mask(self, row_id, df):
