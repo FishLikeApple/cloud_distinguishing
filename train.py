@@ -1,5 +1,5 @@
 import os 
-os.system('pip install -r Steel-Defect-Detection/requirements.txt')
+os.system('pip install -r cloud_distinguishing/requirements.txt')
 import argparse 
 import torch 
 from datasets import SteelDataset 
@@ -37,12 +37,7 @@ parser.add_argument('--encoder_weights', default="imagenet", type=str)
 parser.add_argument('--mode', default='non-cls', type=str)
 args = parser.parse_args()
 
-if args.mode == 'cls':
-    arch='classification'
-    args.num_class = 4
-else:
-    args.num_class = 5
-    arch = '{}_{}_{}'.format(args.mode, args.encoder, args.decoder)
+arch = '{}_{}_{}'.format(args.mode, args.encoder, args.decoder)
 print('Architectyre: {}'.format(arch))
 
 train_dataset = SteelDataset(root_dataset = args.train_dataset, list_data = args.list_train, phase='train', mode=args.mode)
@@ -106,7 +101,7 @@ def train(data_loader):
     loss_sum = 0
     accumulation_steps = 32 // args.batch_size
     optimizer.zero_grad()
-    for idx, (img, segm) in enumerate(tqdm(data_loader)):
+    for idx, (img, segm, _) in enumerate(tqdm(data_loader)):
         img = img.cuda()
         segm = segm.cuda()
         outputs = model(img)
@@ -116,7 +111,7 @@ def train(data_loader):
         torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
         loss_sum += loss.item()
         if (idx + 1 ) % accumulation_steps == 0:
-            optimizer.step() 
+            optimizer.step()
             optimizer.zero_grad()
             if args.print_last_loss != None:
                 print('loss:'+str(loss_sum/accumulation_steps))
@@ -134,7 +129,7 @@ def evaluate(data_loader):
     model.eval()
     total_loss = 0
     with torch.no_grad():
-        for idx, (img, segm) in enumerate(data_loader):
+        for idx, (img, segm, _) in enumerate(data_loader):
             img = img.cuda() 
             segm = segm.cuda() 
             outputs = model(img) 
