@@ -1,8 +1,7 @@
 import os 
-os.system('pip install -r Steel-Defect-Detection/requirements.txt')
 import argparse 
 import torch 
-from datasets import TestSteelDataset 
+from datasets import CloudDataset 
 from torch.utils.data import DataLoader 
 import torch.nn as nn 
 from optimizers import RAdam 
@@ -36,7 +35,14 @@ parser.add_argument('--decoder', default="hrnet", type=str)
 parser.add_argument('--mode', default='non-cls', type=str)
 args = parser.parse_args()
 
-test_dataset = TestSteelDataset(root_dataset = args.test_dataset, list_data = args.list_test, phase='test', mode=args.mode)
+# some hyperparms
+original_height = 1400
+original_width = 2100
+objective_height = 350
+objective_width = 525
+type_list = ['Fish', 'Flower', 'Gravel', 'Sugar']
+
+test_dataset = CloudDataset(root_dataset = args.test_dataset, list_data = args.list_test, phase='test', mode=args.mode)
 
 model = Model(num_class=args.num_class, encoder = args.encoder, decoder = args.decoder, mode=args.mode)
 model = model.cuda()
@@ -46,16 +52,13 @@ criterion = Criterion(mode=args.mode)
 
 test_loader = DataLoader(test_dataset, batch_size = args.batch_size, shuffle=False, num_workers=args.num_workers)
 
-type_list = [1, 2, 3, 4]
 submission = pd.read_csv(args.list_test)
 
 def get_transforms():
-    original_height = 256
-    original_width = 1600
     list_transforms = []
     list_transforms.extend(
         [
-            Resize(height=256, width=1600,  interpolation=cv2.INTER_NEAREST)
+            Resize(height=objective_height, width=objective_width,  interpolation=cv2.INTER_NEAREST)
         ]
     )
     list_trfms = Compose(list_transforms)
@@ -79,21 +82,6 @@ def output2rle(mask_output, type=1):
     mask_output = np.asarray(mask_output)
     mask = np.where(mask_output==type, 1, 0)
     return mask2rle(mask)
-    
-# the function is from https://www.kaggle.com/bibek777/heng-s-model-inference-kernel
-def post_process(probability, threshold, min_size):
-    '''Post processing of each predicted mask, components with lesser number of pixels
-    than `min_size` are ignored'''
-    mask = cv2.threshold(probability, threshold, 1, cv2.THRESH_BINARY)[1]
-    num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
-    predictions = np.zeros((256, 1600), np.float32)
-    num = 0
-    for c in range(1, num_component):
-        p = (component == c)
-        if p.sum() > min_size:
-            predictions[p] = 1
-            num += 1
-    return predictions, num
 
 def test(data_loader):
     model.eval()
@@ -102,9 +90,9 @@ def test(data_loader):
         img = img.cuda()
         output = np.argmax(model(img).cpu().detach().numpy(), axis=1)
         mask = transform_fn(image=np.squeeze(output))['image']
-        for type in type_list:
-            rle = output2rle(mask, type)
-            submission.loc[submission['ImageId_ClassId']==img_id[0]+'_'+str(type), 'EncodedPixels'] = rle
+        for i, type in enumerate(type_list):
+            rle = output2rle(mask, i)
+            submission.loc[submission['Image_Label']==img_id[0]+'_'+type, 'EncodedPixels'] = rle
     submission.to_csv(args.submission, index=False)
 
 test(test_loader)
