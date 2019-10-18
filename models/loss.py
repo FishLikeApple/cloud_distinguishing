@@ -25,7 +25,6 @@ class Criterion(loss._Loss):
                 neg_sum = neg.sum().item() + 1e-12
                 loss = (weight[1]*pos*loss/pos_sum + weight[0]*neg*loss/neg_sum).sum()
         else:
-            print(truth.permute(0, 2, 3, 1).shape)
             logit = logit.permute(0, 2, 3, 1).contiguous().view(-1, 5)
             truth = truth.permute(0, 2, 3, 1).contiguous().view(-1)
             #assert truth.permute(0, 2, 3, 1).shape == [batch_size, 1600, 4, 256]
