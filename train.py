@@ -1,5 +1,4 @@
 import os 
-os.system('pip install -r cloud_distinguishing/requirements.txt')
 import argparse 
 import torch 
 from datasets import CloudDataset 
