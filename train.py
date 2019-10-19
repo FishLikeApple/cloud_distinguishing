@@ -31,7 +31,7 @@ parser.add_argument('--clearing_steps', default=12, type=int)
 parser.add_argument('--print_last_loss', default=None, type=str)
 
 parser.add_argument('--encoder', default="resnet34", type=str)
-parser.add_argument('--decoder', default="hrnet", type=str)  
+parser.add_argument('--decoder', default="Unet", type=str)  
 parser.add_argument('--encoder_weights', default="imagenet", type=str) 
 parser.add_argument('--mode', default='non-cls', type=str)
 args = parser.parse_args()
